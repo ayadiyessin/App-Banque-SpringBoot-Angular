@@ -1,0 +1,263 @@
+<!-- Content Header (Page header) -->
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1>Liste Clients</h1>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a routerLink="/dashboard">Accueil</a></li>
+          <li class="breadcrumb-item active">Liste Clients</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+  <div *ngIf="!OnLoud">
+    <div class="center-spinner"><i class="fa fa-spinner fa-spin"></i>
+    </div>
+    <div class="center-textspin">
+      <div class="text-bold pt-2">Chargement...</div>
+    </div>
+  </div>
+  <div *ngIf="OnLoud">
+    <div class="container-fluid">
+      <!-- /.row -->
+      <div class="row">
+        <div class="col-12">
+          <div class="card card-lightblue">
+            <div class="card-header">
+              <h3 class="card-title marge-en-haut">Liste des Clients</h3>
+              <div class="float-right">
+                <button type="button" data-toggle="modal" data-target="#client-modal" class="btn btn-light">
+                  Ajouter Client
+                </button>
+              </div>
+
+            </div>
+
+            <!-- /.card-header -->
+            <div class="card-body table-responsive p-0">
+              <div *ngIf="nbClient == 0" class="aucune">
+                <h4>Aucune Client.</h4>
+              </div>
+
+              <div *ngIf="nbClient != 0">
+
+                <mat-card class="w-100">
+                  <mat-card-content>
+                    <mat-form-field>
+                      <input matInput (keyup)="applyFilter($event)" placeholder="Filter">
+                    </mat-form-field>
+
+                    <div class="table-responsive">
+                      <table mat-table [dataSource]="datasource" matSort class="mat-elevation-z8">
+
+                        <ng-container matColumnDef="id">
+                          <th mat-header-cell *matHeaderCellDef> ID </th>
+                          <td mat-cell *matCellDef="let element; let i = index"> {{i+1}} </td>
+                        </ng-container>
+
+                        <!-- Name Column -->
+                        <ng-container matColumnDef="nomPrenom">
+                          <th mat-header-cell *matHeaderCellDef> Nom & Prenom </th>
+                          <td mat-cell *matCellDef="let element"> {{element.nom+' '+element.prenom}} </td>
+                        </ng-container>
+
+                        <!-- Weight Column -->
+                        <ng-container matColumnDef="email">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header> Email </th>
+                          <td mat-cell *matCellDef="let element"> {{element.email}} </td>
+                        </ng-container>
+
+                        <!-- Symbol Column -->
+                        <ng-container matColumnDef="telephone">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header> Téléphone </th>
+                          <td mat-cell *matCellDef="let element"> {{element.telephone}} </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="adresse">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header> Addresse </th>
+                          <td mat-cell *matCellDef="let element"> {{element.adresse}} </td>
+                        </ng-container>
+
+                        <!-- Compte Column -->
+                        <ng-container matColumnDef="compte">
+                          <th mat-header-cell *matHeaderCellDef> Compte </th>
+                          <td mat-cell *matCellDef="let element">
+                            <div class="btn-group btn-group-sm">
+                              <a routerLink="/compte/{{element.id}}" class="btn btn-info"><i class="fas fa-eye"></i></a>
+                            </div>
+                          </td>
+                        </ng-container>
+
+                        <!-- Action Column -->
+                        <ng-container matColumnDef="action">
+                          <th mat-header-cell *matHeaderCellDef> Action </th>
+                          <td mat-cell *matCellDef="let element" [attr.id]="'row-' + element.id">
+                            <div class="btn-group btn-group-sm">
+
+                              <a routerLink="/updateclient/{{element.id}}" class="btn btn-warning"><i
+                                  class="fas fa-edit"></i></a>
+                              &nbsp;&nbsp;
+                              <button class="btn btn-danger" (click)="deleteClient(element.id)">
+                                <i class="fas fa-trash"></i>
+                              </button>
+                            </div>
+
+                          </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+                      </table>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- modal-->
+<div class="modal fade" id="client-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Ajouter Client</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeModalAndResetForm()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form [formGroup]="ClientForm" (ngSubmit)="onsub()">
+        <div class="modal-body">
+
+          <div class="card-body">
+            <div class="row">
+              <div class="col-6">
+                <div class="form-group">
+                  <label for="nom">Nom <span class="obligat">*</span></label>
+                  <mat-form-field class="w-100">
+                    <input type="text" formControlName="nom" id="nom" placeholder="Nom Client"
+                      matInput [matAutocomplete]="autoNom" />
+                    <mat-autocomplete #autoNom="matAutocomplete">
+                      <mat-option *ngFor="let nom of filteredNoms | async" [value]="nom">
+                        {{nom}}
+                      </mat-option>
+                    </mat-autocomplete>
+                  </mat-form-field>
+
+                  <div *ngIf="ClientForm.get('nom')?.hasError('required') && ClientForm.get('nom')?.touched"
+                    class="obligat">
+                    Le nom est requis.
+                  </div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="form-group">
+                  <label for="prenom">Prenom <span class="obligat">*</span></label>
+                  <mat-form-field class="w-100">
+                    <input type="text" formControlName="prenom" id="prenom" matInput [matAutocomplete]="autoPrenom"
+                      placeholder="Prénom Client" />
+                    <mat-autocomplete #autoPrenom="matAutocomplete">
+                      <mat-option *ngFor="let prenom of filteredPrenoms | async" [value]="prenom">
+                        {{prenom}}
+                      </mat-option>
+                    </mat-autocomplete>
+                  </mat-form-field>
+                  <div *ngIf="ClientForm.get('prenom')?.hasError('required') && ClientForm.get('prenom')?.touched"
+                    class="obligat">
+                    Le prénom est requis.
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-6">
+                <div class="form-group">
+                  <label for="email">Email <span class="obligat">*</span></label>
+                  <mat-form-field class="w-100">
+                    <input type="text" formControlName="email" matInput id="email" placeholder="Email Client" />
+                  </mat-form-field>
+                  <div *ngIf="ClientForm.get('email')?.hasError('required') && ClientForm.get('email')?.touched"
+                    class="obligat">
+                    L'email est requis.
+                  </div>
+                  <div *ngIf="ClientForm.get('email')?.hasError('email') && ClientForm.get('email')?.touched"
+                    class="obligat">
+                    L'email n'est pas valide.
+                  </div>
+                </div>
+
+              </div>
+              <div class="col-6">
+                <div class="form-group">
+                  <label for="telephone">Téléphone <span class="obligat">*</span></label>
+                  <mat-form-field class="w-100">
+                    <input type="text" formControlName="telephone" matInput id="telephone" placeholder="Téléphone Client" (keypress)="restrictToNumbers($event)" />
+                  </mat-form-field>
+                  <div *ngIf="ClientForm.get('telephone')?.hasError('required') && ClientForm.get('telephone')?.touched"
+                    class="obligat">
+                    Le téléphone est requis.
+                  </div>
+                  <div *ngIf="ClientForm.get('telephone')?.hasError('pattern') && ClientForm.get('telephone')?.touched"
+                    class="obligat">
+                    Le numéro de téléphone n'est pas valide.
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="adresse">Adresse <span class="obligat">*</span></label>
+              <mat-form-field class="w-100">
+                <input type="text" matInput formControlName="adresse" [matAutocomplete]="autoAdresse"
+                  placeholder="Adresse Client" />
+                <mat-autocomplete #autoAdresse="matAutocomplete">
+                  <mat-option *ngFor="let adresse of filteredAdresses | async" [value]="adresse">
+                    {{adresse}}
+                  </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>
+              <div *ngIf="ClientForm.get('adresse')?.hasError('required') && ClientForm.get('adresse')?.touched"
+                class="obligat">
+                L'adresse est requise.
+              </div>
+            </div>
+
+
+
+          </div>
+          <!-- /.card-body -->
+
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" (click)="closeModalAndResetForm()" data-dismiss="modal">
+            Anuler
+          </button>
+          <button type="submit" class="btn btn-primary">
+            Ajouter
+          </button>
+
+        </div>
+      </form>
+
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<!--fin modal-->

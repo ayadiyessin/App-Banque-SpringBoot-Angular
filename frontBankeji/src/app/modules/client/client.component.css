@@ -1,0 +1,12 @@
+.obligat {
+    color: red;
+}
+
+::ng-deep .cdk-overlay-container {
+    z-index: 1500 !important;
+}
+
+
+.modal-dialog {
+    overflow: visible !important;
+}

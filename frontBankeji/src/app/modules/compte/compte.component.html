@@ -1,0 +1,240 @@
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Liste Comptes de <a class="point" data-toggle="modal"
+                        data-target="#infoclient-modal">{{clientConnect.nom+' '+clientConnect.prenom}}</a></h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a routerLink="/dashboard">Accueil</a></li>
+                    <li class="breadcrumb-item"><a routerLink="/client">Client</a></li>
+                    <li class="breadcrumb-item active">Liste Comptes</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div *ngIf="!OnLoud">
+        <div class="center-spinner"><i class="fa fa-spinner fa-spin"></i>
+        </div>
+        <div class="center-textspin">
+            <div class="text-bold pt-2">Chargement...</div>
+        </div>
+    </div>
+    <div *ngIf="OnLoud">
+        <div class="container-fluid">
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card card-lightblue">
+                        <div class="card-header">
+                            <h3 class="card-title marge-en-haut">Liste des Comptes</h3>
+                            <div class="float-right">
+                                <button type="button" data-toggle="modal" data-target="#compte-modal"
+                                    class="btn btn-light">
+                                    Ajouter Compte
+                                </button>
+                            </div>
+
+                        </div>
+
+                        <!-- /.card-header -->
+                        <div class="card-body table-responsive p-0">
+
+                            <div *ngIf="nbCompte == 0" class="aucune">
+                                <h4>Aucune Compte Client.</h4>
+                            </div>
+
+                            <div *ngIf="nbCompte != 0">
+                                <mat-card class="w-100">
+                                    <mat-card-content>
+                                        <mat-form-field>
+                                            <input matInput (keyup)="applyFilter($event)" placeholder="Filter">
+                                        </mat-form-field>
+                                        <div class="table-responsive">
+                                        <table mat-table [dataSource]="datasource" class="mat-elevation-z8" matSort>
+
+                                            <ng-container matColumnDef="id">
+                                                <th mat-header-cell *matHeaderCellDef > ID </th>
+                                                <td mat-cell *matCellDef="let element; let i = index"> {{i+1}} </td>
+                                            </ng-container>
+
+                                            <!-- Name Column -->
+                                            <ng-container matColumnDef="numeroCompte">
+                                                <th mat-header-cell *matHeaderCellDef mat-sort-header> Numéro Compte
+                                                </th>
+                                                <td mat-cell *matCellDef="let element"> {{element.numeroCompte}} </td>
+                                            </ng-container>
+
+                                            <!-- Weight Column -->
+                                            <ng-container matColumnDef="typeCompte">
+                                                <th mat-header-cell *matHeaderCellDef mat-sort-header> Type Compte </th>
+                                                <td mat-cell *matCellDef="let element"> {{element.typeCompte}} </td>
+                                            </ng-container>
+
+                                            <!-- Symbol Column -->
+                                            <ng-container matColumnDef="solde">
+                                                <th mat-header-cell *matHeaderCellDef mat-sort-header> Solde </th>
+                                                <td mat-cell *matCellDef="let element"> {{element.solde}} </td>
+                                            </ng-container>
+
+                                            <!-- Action Column -->
+                                            <ng-container matColumnDef="transaction">
+                                                <th mat-header-cell *matHeaderCellDef> Transaction </th>
+                                                <td mat-cell *matCellDef="let element">
+
+                                                    <div class="btn-group btn-group-sm">
+                                                        <a routerLink="/transaction/{{element.id}}"
+                                                            class="btn btn-info"><i class="fas fa-eye"></i></a>
+                                                    </div>
+
+
+                                                </td>
+
+                                            </ng-container>
+
+                                            <!-- Action Column -->
+                                            <ng-container matColumnDef="action">
+                                                <th mat-header-cell *matHeaderCellDef> Action </th>
+                                                <td mat-cell *matCellDef="let element" [attr.id]="'row-' + element.id">
+                                                    <div class="btn-group btn-group-sm">
+
+                                                        <a routerLink="/updatecompte/{{element.id}}"
+                                                            class="btn btn-warning"><i class="fas fa-edit"></i></a>
+                                                        &nbsp;&nbsp;
+                                                        <button class="btn btn-danger"
+                                                            (click)="deleteCompteAjax(element.id)">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </div>
+
+                                                </td>
+                                            </ng-container>
+
+                                            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                                            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+                                        </table>
+                                    </div>
+                                    </mat-card-content>
+                                </mat-card>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- modal-->
+<div class="modal fade" id="compte-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Ajouter Compte</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                    (click)="closeModalAndResetForm()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form [formGroup]="CompteForm" (ngSubmit)="onsub()">
+                <div class="modal-body">
+
+                    <div class="card-body">
+
+                        <div class="form-group">
+                            <label for="numeroCompte">Numéro Compte <span class="obligat">*</span></label>
+                            <input type="text" formControlName="numeroCompte" class="form-control" id="numeroCompte"
+                                placeholder="xxxx-xxxx-xxxx-xxxx" />
+                            <div *ngIf="CompteForm.get('numeroCompte')?.hasError('required') && CompteForm.get('numeroCompte')?.touched"
+                                class="obligat">
+                                Le numéro de compte est requis.
+                            </div>
+                            <div *ngIf="CompteForm.get('numeroCompte')?.hasError('pattern') && CompteForm.get('numeroCompte')?.touched"
+                                class="obligat">
+                                Le numéro de compte doit être au format "xxxx-xxxx-xxxx-xxxx".
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="typeCompte">Type Compte <span class="obligat">*</span></label>
+                            <select formControlName="typeCompte" class="form-control" id="typeCompte">
+                                <option value="" disabled selected>Sélectionner un type de compte</option>
+                                <option value="Courant">Courant</option>
+                                <option value="Epargne">Epargne</option>
+                            </select>
+                            <div *ngIf="CompteForm.get('typeCompte')?.hasError('required') && CompteForm.get('typeCompte')?.touched"
+                                class="obligat">
+                                Le type de compte est requis.
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="solde">Solde <span class="obligat">*</span></label>
+                            <input type="text" formControlName="solde" class="form-control" id="solde" placeholder="Solde" (keypress)="restrictToNumbers($event)"/>
+                            <div *ngIf="CompteForm.get('solde')?.hasError('required') && CompteForm.get('solde')?.touched"
+                                class="obligat">
+                                Le solde est requis.
+                            </div>
+                            <div *ngIf="CompteForm.get('solde')?.hasError('pattern') && CompteForm.get('solde')?.touched"
+                                class="obligat">
+                                Le solde doit être un nombre positif non nul.
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <!-- /.card-body -->
+
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" (click)="closeModalAndResetForm()"
+                        data-dismiss="modal">
+                        Anuler
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Ajouter
+                    </button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!--fin modal-->
+<div class="modal fade" id="infoclient-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h4 class="modal-title">Détails Client</h4>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close"
+                    (click)="closeModalAndResetForm()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><strong>Nom :</strong> {{ clientConnect.nom }}</li>
+                    <li class="list-group-item"><strong>Prénom :</strong> {{ clientConnect.prenom }}</li>
+                    <li class="list-group-item"><strong>Email :</strong> {{ clientConnect.email }}</li>
+                    <li class="list-group-item"><strong>Téléphone :</strong> {{ clientConnect.telephone }}</li>
+                    <li class="list-group-item"><strong>Adresse :</strong> {{ clientConnect.adresse }}</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                    (click)="closeModalAndResetForm()">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>

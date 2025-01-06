@@ -1,0 +1,83 @@
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Compte {{informCompte.numeroCompte+' de '+inforClient.nom+' '+inforClient.prenom}}</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a routerLink="/dashboard">Accueil</a></li>
+                    <li class="breadcrumb-item"><a routerLink="/client">Client</a></li>
+                    <li class="breadcrumb-item"><a routerLink="/compte/{{informCompte.clientId}}">Compte</a></li>
+                    <li class="breadcrumb-item active">Modifier Compte</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div *ngIf="!OnLoud">
+        <div class="center-spinner"><i class="fa fa-spinner fa-spin"></i>
+        </div>
+        <div class="center-textspin">
+            <div class="text-bold pt-2">Chargement...</div>
+        </div>
+    </div>
+    <div *ngIf="OnLoud">
+        <div class="container-fluid">
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-1"></div>
+                <div class="col-10">
+                    <div class="card card-lightblue">
+                        <div class="card-header">
+                            <h3 class="card-title marge-en-haut">Information compte Client</h3>
+                        </div>
+                        <form [formGroup]="CompteForm" (ngSubmit)="onupdate()">
+                            <div class="modal-body">
+
+                                <div class="card-body">
+
+                                    <div class="form-group">
+                                        <label for="numeroCompte">Numéro Compte <span class="obligat">*</span></label>
+                                        <input type="text" formControlName="numeroCompte" class="form-control"
+                                            id="numeroCompte" placeholder="Numéro de compte" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="typeCompte">Type Compte <span class="obligat">*</span></label>
+                                        <select formControlName="typeCompte" class="form-control" id="typeCompte">
+                                            <option value="Courant">Courant</option>
+                                            <option value="Epargne">Epargne</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="solde">Solde <span class="obligat">*</span></label>
+                                        <input type="text" formControlName="solde" class="form-control" id="solde" />
+                                    </div>
+
+                                </div>
+                                <!-- /.card-body -->
+
+                            </div>
+                            <div class="modal-footer justify-content-between">
+                                <button type="button" class="btn btn-default" (click)="reloadPage()">
+                                    Annuler
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    Modifier
+                                </button>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

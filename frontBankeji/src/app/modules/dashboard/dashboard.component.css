@@ -1,0 +1,22 @@
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+
+
+.chart-wrapper {
+max-width: 500px; /* Largeur à 100% pour occuper tout l'espace disponible */
+  max-width: 500px; /* Hauteur fixe du wrapper (ajustez selon vos besoins) */
+  padding: 20px; /* Espacement intérieur pour séparer le contenu du bord du wrapper */
+ }
+
+ .tai{
+  max-height: 300px;
+ }
+ .taill{
+  height: 400px;
+  margin-right: 35px;
+ }
+
+ .ssv{
+  margin-top: 20px;
+ }
+ .txtc{
+margin-left: 25%;}
