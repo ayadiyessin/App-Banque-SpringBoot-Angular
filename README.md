@@ -41,13 +41,6 @@ Ce projet est une application web de gestion bancaire développée avec **Spring
 - **MySQL** : Base de données pour stocker les données.
 - **Git** : Pour cloner le dépôt.
 
-### Étapes d'installation
-
-1. Clonez le dépôt :
-   ```bash
-   git clone https://github.com/votre-utilisateur/bankeji-tn.git
-   cd bankeji-tn
-
 ## Démonstration
 
 Découvrez une démonstration de l'application **bankeji.tn**, mettant en avant ses principales fonctionnalités : authentification sécurisée, gestion des clients, comptes et transactions.
